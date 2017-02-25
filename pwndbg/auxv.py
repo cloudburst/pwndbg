@@ -105,6 +105,7 @@ class AUXV(dict):
 
 @pwndbg.memoize.reset_on_objfile
 def get():
+    return AUXV()
     return use_info_auxv() or walk_stack() or AUXV()
 
 def use_info_auxv():

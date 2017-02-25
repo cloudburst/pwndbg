@@ -72,6 +72,7 @@ def exe():
     Return a loaded ELF header object pointing to the Ehdr of the
     main executable.
     """
+    return None
     e = entry()
     if e:
         return load(e)
@@ -82,6 +83,7 @@ def entry():
     """
     Return the address of the entry point for the main executable.
     """
+    return 0
     entry = pwndbg.auxv.get().AT_ENTRY
     if entry:
         return entry
@@ -111,6 +113,7 @@ def entry():
 
 
 def load(pointer):
+    return None
     return get_ehdr(pointer)[1]
 
 ehdr_type_loaded = 0

@@ -155,6 +155,8 @@ def find_lower_boundary(addr, max_pages=1024):
     try:
         for i in range(max_pages):
             pwndbg.memory.read(addr, 1)
+            if addr == 0:
+                break
             addr -= pwndbg.memory.PAGE_SIZE
     except gdb.MemoryError:
         pass
