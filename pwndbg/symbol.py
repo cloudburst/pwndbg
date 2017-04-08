@@ -15,6 +15,7 @@ from __future__ import unicode_literals
 import os
 import re
 import tempfile
+import subprocess
 
 import elftools.common.exceptions
 import elftools.elf.constants
@@ -222,6 +223,45 @@ def address(symbol):
             return address
     except Exception:
         pass
+
+def mangle(name, binary=None):
+    """Retrieve the mangled C++ function name from a binary"""
+    if binary is None:
+        binary = pwndbg.vmmap.find(pwndbg.regs.pc).objfile
+
+    # First match the name argument against the binary by running:
+    # "objdump -T binary | c++filt | grep unmangled_name"
+    cmd = ["objdump", "-T", binary]
+    objdump = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+
+    cmd = ["c++filt"]
+    cppfilt = subprocess.Popen(cmd, stdin=objdump.stdout, stdout=subprocess.PIPE)
+
+    cmd = ["grep", name]
+    grep = subprocess.Popen(cmd, stdin=cppfilt.stdout, stdout=subprocess.PIPE)
+    (found, _) = grep.communicate()
+
+    if len(found) > 0:
+        line = found.decode("utf8")
+        address_of_mangled_symbol = line.split()[0]
+    else:
+        return None
+
+    # Use the address of the unmangled name to get the mangled name:
+    # "objdump -T binary | grep address"
+    cmd = ["objdump", "-T", binary]
+    objdump = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+
+    cmd = ["grep", address_of_mangled_symbol]
+    grep = subprocess.Popen(cmd, stdin=objdump.stdout, stdout=subprocess.PIPE)
+    (found, _) = grep.communicate()
+
+    if len(found) > 0:
+        line = found.decode("utf8").strip()
+        mangled_name = line.split()[-1]
+        return mangled_name
+    else:
+        return None
 
 @pwndbg.events.stop
 @pwndbg.memoize.reset_on_start
