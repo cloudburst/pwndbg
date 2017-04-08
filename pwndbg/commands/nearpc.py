@@ -109,10 +109,6 @@ def nearpc(pc=None, lines=None, to_string=False, emulate=False):
         if pwndbg.config.highlight_pc:
             prefix = C.highlight(prefix)
 
-        pre = pwndbg.ida.Anterior(i.address)
-        if pre:
-            result.append(N.ida_anterior(pre))
-
         # Colorize address and symbol if not highlighted
         if i.address != pc or not pwndbg.config.highlight_pc:
             address_str = N.address(address_str)
@@ -142,6 +138,14 @@ def nearpc(pc=None, lines=None, to_string=False, emulate=False):
         elif prev and any(g in prev.groups for g in (CS_GRP_CALL, CS_GRP_JUMP, CS_GRP_RET)):
             if len('%s' % nearpc_branch_marker_contiguous) > 0:
                 result.append('%s' % nearpc_branch_marker_contiguous)
+
+        pre = pwndbg.ida.Anterior(i.address)
+        if pre:
+            prefix_len = len(pwndbg.config.nearpc_prefix.value) + 2
+            # address_str can't be used due to bash color codes
+            addr_len = len(hex(i.address)) + 1
+            pre = (' ' * (prefix_len + addr_len)) + pre
+            result.append(N.ida_anterior(pre))
 
         # For syscall instructions, put the name on the side
         if i.address == pc:
