@@ -61,7 +61,7 @@ def context(*args):
     if 'c' in args: result.extend(context_source())
     if 'a' in args: result.extend(context_args())
     if 's' in args: result.extend(context_stack())
-    if 'b' in args: result.extend(context_backtrace())
+    #if 'b' in args: result.extend(context_backtrace())
     result.extend(context_signal())
 
     if config_clear_screen:
