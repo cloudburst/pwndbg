@@ -170,7 +170,8 @@ def Jump(addr):
 
 @withIDA
 @takes_address
-@pwndbg.memoize.reset_on_objfile
+# sync Anterior comment every stepi
+# @pwndbg.memoize.reset_on_objfile
 def Anterior(addr):
     hexrays_prefix = '\x01\x04; '
     lines = []
