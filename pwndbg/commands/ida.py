@@ -129,6 +129,20 @@ class ida(gdb.Function):
 
         return result
 
+    def demangle(self, name):
+        """Demangle a C++ function name using c++filt"""
+        # Build up the command line to run
+        cmd = ["c++filt",
+               name]
+
+        import subprocess
+        try:
+            io = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        except Exception:
+            print("Could not run c++filt.  Please ensure it's installed and in $PATH.")
+
+        (stdout, _) = io.communicate()
+        return stdout.split("\n")
 
 ida()
 save_ida()
