@@ -13,4 +13,4 @@ import pwndbg.symbol
 @pwndbg.commands.Command
 def r2l(address):
     """Convert IDA remote address to GDB local address"""
-    print(hex(pwndbg.ida.r2l(address)))
+    print(hex(pwndbg.ida.r2l(int(address, 16))))
