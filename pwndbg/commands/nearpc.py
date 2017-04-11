@@ -144,8 +144,9 @@ def nearpc(pc=None, lines=None, to_string=False, emulate=False):
             prefix_len = len(pwndbg.config.nearpc_prefix.value) + 2
             # address_str can't be used due to bash color codes
             addr_len = len(hex(i.address)) + 1
-            pre = (' ' * (prefix_len + addr_len)) + pre
-            result.append(N.ida_anterior(pre))
+            for line in pre.split("\n"):
+                line = (' ' * (prefix_len + addr_len)) + line
+                result.append(N.ida_anterior(line))
 
         # For syscall instructions, put the name on the side
         if i.address == pc:
