@@ -74,6 +74,12 @@ class withIDA(object):
             return self.fn(*args, **kwargs)
         return None
 
+def withHexrays(f):
+    @withIDA
+    @functools.wraps(f)
+    def wrapper(*a, **kw):
+        if _ida.init_hexrays_plugin():
+            return f(*a, **kw)
 
 def withHexrays(f):
     @withIDA
